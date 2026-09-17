@@ -2,6 +2,7 @@ from sqlmodel import Session
 from fastapi.responses import RedirectResponse
 from models import User , Note
 from fastapi import FastAPI , responses , Form
+from database import engine
 
 app = FastAPI()
 
