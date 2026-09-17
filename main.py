@@ -1,8 +1,10 @@
 from sqlmodel import Session
 from fastapi.responses import RedirectResponse
 from models import User , Note
-from fastapi import FastAPI , responses , Form
+from fastapi import FastAPI , requests , Form
 from database import engine
+from fastapi.templating import Jinja2Templates
+
 
 app = FastAPI()
 
