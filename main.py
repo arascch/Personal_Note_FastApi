@@ -1,12 +1,14 @@
 from sqlmodel import Session
 from fastapi.responses import RedirectResponse
 from models import User , Note
-from fastapi import FastAPI , requests , Form
+from fastapi import FastAPI , Request , Form
 from database import engine
-from fastapi.templating import Jinja2Templates
+from fastapi.templating import Jinja2Templates 
 
 
 app = FastAPI()
+
+templates = Jinja2Templates(directory="templates")
 
 def make_hash(password:str):
     return password + "scrambled!"
@@ -21,3 +23,7 @@ def register(username: str=Form(...) , password: str=Form(...)):
         session.commit()
 
     return RedirectResponse(url="/login",status_code=303)
+
+@app.get("/register")
+def Show_register_page(request:Request):
+    return templates.TemplateResponse("register.html" , {"request": request})
