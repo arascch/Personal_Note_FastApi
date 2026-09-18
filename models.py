@@ -8,8 +8,9 @@ class User(SQLModel , table = True):
     privilege : str = "user"
 
 class Note(SQLModel , table = True):
+    id:int |None=Field(default=None , primary_key=True)
     title : str
     content: str
     is_important : bool = False
-    created_at = Field(default_factory=datetime.now)
+    created_at :datetime= Field(default_factory=datetime.now)
     user_id : int= Field(foreign_key="User.id")

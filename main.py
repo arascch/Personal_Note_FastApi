@@ -25,5 +25,5 @@ def register(username: str=Form(...) , password: str=Form(...)):
     return RedirectResponse(url="/login",status_code=303)
 
 @app.get("/register")
-def Show_register_page(request:Request):
-    return templates.TemplateResponse("register.html" , {"request": request})
+def show_register_page(request: Request):
+    return templates.TemplateResponse(name="register.html", request=request)
