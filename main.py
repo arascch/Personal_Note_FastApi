@@ -1,4 +1,4 @@
-from sqlmodel import Session
+from sqlmodel import Session , select
 from fastapi.responses import RedirectResponse
 from models import User , Note
 from fastapi import FastAPI , Request , Form
@@ -27,3 +27,20 @@ def register(username: str=Form(...) , password: str=Form(...)):
 @app.get("/register")
 def show_register_page(request: Request):
     return templates.TemplateResponse(name="register.html", request=request)
+
+@app.get("/login")
+def show_login_page(request:Request):
+    return templates.TemplateResponse(name = "login.html" , request=request)
+
+@app.post("/login")
+def login(username:str=Form(...) , password:str=Form(...)):
+    with Session(engine) as session:
+        statement = select(User).where(User.username == username)
+        db_user = session.exec(statement).first()
+
+        scrambled_attempt = make_hash(password)
+        if db_user and db_user.hashed_password == scrambled_attempt:
+            return {"message":"login sucessful!"}
+        else:
+            return {"error":"Invalid username or password"}
+    
