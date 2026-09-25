@@ -55,7 +55,7 @@ def show_dashboard(request:Request):
     )
 
 @app.post("/notes")
-def create_note(title:str=Form(...) , content:str=Form(...))
+def create_note(title:str=Form(...) , content:str=Form(...)):
     new_note = Note(title=title , content=content)
     with Session(engine) as session:
         session.add(new_note)
