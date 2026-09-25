@@ -40,7 +40,7 @@ def login(username:str=Form(...) , password:str=Form(...)):
 
         scrambled_attempt = make_hash(password)
         if db_user and db_user.hashed_password == scrambled_attempt:
-            return {"message":"login sucessful!"}
+            return RedirectResponse(url="/dashboard" , status_code=303)
         else:
             return {"error":"Invalid username or password"}
     
