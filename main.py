@@ -1,11 +1,11 @@
-from sqlmodel import Session , select
+from sqlmodel import Session , select ,SQLModel
 from fastapi.responses import RedirectResponse
 from models import User , Note
-from fastapi import FastAPI , Request , Form
+from fastapi import FastAPI , Request , Form , Cookie
 from database import engine
 from fastapi.templating import Jinja2Templates 
 
-
+SQLModel.metadata.create_all(engine)
 app = FastAPI()
 
 templates = Jinja2Templates(directory="templates")
@@ -40,14 +40,17 @@ def login(username:str=Form(...) , password:str=Form(...)):
 
         scrambled_attempt = make_hash(password)
         if db_user and db_user.hashed_password == scrambled_attempt:
-            return RedirectResponse(url="/dashboard" , status_code=303)
+            response= RedirectResponse(url="/dashboard" , status_code=303)
+            response.set_cookie(key="user_id", value=str(db_user.id))
+            return response
         else:
             return {"error":"Invalid username or password"}
     
 @app.get("/dashboard")
-def show_dashboard(request:Request):
+def show_dashboard(request:Request , user_id:int|None = Cookie(default=None)):
     with Session(engine) as session:
-        notes = session.exec(select(Note)).all()
+        statement = select(Note).where(Note.user_id==user_id)
+        notes = session.exec(statement).all()
     return templates.TemplateResponse(
         name = "dashboard.html",
         request= request,
@@ -55,8 +58,8 @@ def show_dashboard(request:Request):
     )
 
 @app.post("/notes")
-def create_note(title:str=Form(...) , content:str=Form(...)):
-    new_note = Note(title=title , content=content)
+def create_note(title:str=Form(...) , content:str=Form(...) , user_id:int|None = Cookie(default=None)):
+    new_note = Note(title=title , content=content , user_id=user_id)
     with Session(engine) as session:
         session.add(new_note)
         session.commit()
