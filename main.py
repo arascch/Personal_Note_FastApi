@@ -44,3 +44,20 @@ def login(username:str=Form(...) , password:str=Form(...)):
         else:
             return {"error":"Invalid username or password"}
     
+@app.get("/dashboard")
+def show_dashboard(request:Request):
+    with Session(engine) as session:
+        notes = session.exec(select(Note)).all()
+    return templates.TemplateResponse(
+        name = "dashboard.html",
+        request= request,
+        context={"notes":notes}
+    )
+
+@app.post("/notes")
+def create_note(title:str=Form(...) , content:str=Form(...))
+    new_note = Note(title=title , content=content)
+    with Session(engine) as session:
+        session.add(new_note)
+        session.commit()
+    return RedirectResponse(url = "/dashboard" , status_code=303)
